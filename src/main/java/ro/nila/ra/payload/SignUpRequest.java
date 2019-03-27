@@ -1,8 +1,11 @@
 package ro.nila.ra.payload;
 
+import ro.nila.ra.model.Role;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
 public class SignUpRequest {
 
@@ -19,6 +22,8 @@ public class SignUpRequest {
     @Size(min = 5, max = 50)
     private String password;
 
+    private Set<Role> roles;
+
     public String getUsername() {
         return username;
     }
@@ -29,5 +34,9 @@ public class SignUpRequest {
 
     public String getPassword() {
         return password;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
     }
 }

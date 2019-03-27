@@ -1,6 +1,8 @@
 package ro.nila.ra.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +31,8 @@ import java.util.Collections;
 @RestController
 @RequestMapping("/users")
 public class UsersController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UsersController.class);
 
     private PasswordEncoder passwordEncoder;
     private JwtTokenProvider jwtTokenProvider;
@@ -72,11 +76,13 @@ public class UsersController {
      */
     @PostMapping("/signUp")
     public ResponseEntity signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
-        if (accountService.existsByUsername(signUpRequest.getUsername())) {
+        String username = signUpRequest.getUsername();
+        if (accountService.existsByUsername(username)) {
             return new ResponseEntity<>(new ApiResponse(false, "Username is already taken!", null),
                     HttpStatus.BAD_REQUEST);
         }
-        if (accountService.existsByEmail(signUpRequest.getEmail())) {
+        String email = signUpRequest.getEmail();
+        if (accountService.existsByEmail(email)) {
             return new ResponseEntity<>(new ApiResponse(false, "Email Address already in use!", null),
                     HttpStatus.BAD_REQUEST);
         }
@@ -84,10 +90,18 @@ public class UsersController {
         Account account = new Account(signUpRequest.getUsername(),
                 signUpRequest.getEmail(), signUpRequest.getPassword());
         account.setPassword(passwordEncoder.encode(account.getPassword()));
-        Role accountRole = roleService.findByRoleName(RoleName.ROLE_USER)
-                .orElseThrow(() -> new AppException("User Role not set."));
+
+        Role accountRole;
+        if (signUpRequest.getRoles() == null || signUpRequest.getRoles().iterator().next().getRoleName().equals(RoleName.ROLE_USER)) {
+            accountRole = roleService.findByRoleName(RoleName.ROLE_USER).get();
+        } else {
+            accountRole = roleService.findByRoleName(RoleName.ROLE_ADMIN)
+                    .orElseThrow(() -> new AppException("User Role not set."));
+        }
+
         account.setRoles(Collections.singleton(accountRole));
         Account result = accountService.save(account);
+
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/users/{id}")
                 .buildAndExpand(result.getId()).toUri();
@@ -102,7 +116,7 @@ public class UsersController {
      *
      * @param id identifier of the Account
      * @return Success - 200 Ok and Deleted Account
-     *         Fail - 404 Not Found
+     * Fail - 404 Not Found
      */
     @DeleteMapping("/{id}")
     @JsonView(Account.WithoutPasswordView.class)
@@ -117,13 +131,14 @@ public class UsersController {
         }
     }
 
-    /** Method that will get all Accounts from DB
+    /**
+     * Method that will get all Accounts from DB
      *
      * @return A List with the Accounts
      */
     @GetMapping()
     @JsonView(Account.WithoutPasswordView.class)
-    public ResponseEntity getUsers(){
+    public ResponseEntity getUsers() {
         return ResponseEntity.ok(accountService.findAll());
     }
 

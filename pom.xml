@@ -10,9 +10,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>ro.nila</groupId>
-    <artifactId>rental-spring-boot</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <groupId>ro.nila.ra</groupId>
+    <artifactId>user-ra-api</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <name>Users API</name>
     <description>Users API</description>
 
