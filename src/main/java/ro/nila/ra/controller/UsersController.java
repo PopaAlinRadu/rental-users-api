@@ -64,7 +64,8 @@ public class UsersController {
 
     /**
      * Method that will register a new User if the username/email are not already used
-     * - will return {"success" : "false"} if username or email are already into DB
+     * - Fail will return {"success" : "false"} if username or email are already into DB
+     * - Success will return {"success" : "true"} if registration was successfully
      *
      * @param signUpRequest object that will contain Account details
      * @return ApiResponse object with a message containing the success or failure of the request
@@ -91,14 +92,17 @@ public class UsersController {
                 .fromCurrentContextPath().path("/users/{id}")
                 .buildAndExpand(result.getId()).toUri();
 
-        return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully", location.toString()));
+        return ResponseEntity
+                .created(location)
+                .body(new ApiResponse(true, "User registered successfully", location.toString()));
     }
 
     /**
      * Method that will delete an Account based on its id
      *
      * @param id identifier of the Account
-     * @return Fail - 404 Not Found
+     * @return Success - 200 Ok and Deleted Account
+     *         Fail - 404 Not Found
      */
     @DeleteMapping("/{id}")
     @JsonView(Account.WithoutPasswordView.class)
