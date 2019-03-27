@@ -10,7 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import ro.nila.ra.exceptions.AppException;
 import ro.nila.ra.model.Account;
 import ro.nila.ra.model.Role;
@@ -73,11 +72,11 @@ public class UsersController {
     @PostMapping("/signUp")
     public ResponseEntity signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
         if (accountService.existsByUsername(signUpRequest.getUsername())) {
-            return new ResponseEntity(new ApiResponse(false, "Username is already taken!", null),
+            return new ResponseEntity<>(new ApiResponse(false, "Username is already taken!", null),
                     HttpStatus.BAD_REQUEST);
         }
         if (accountService.existsByEmail(signUpRequest.getEmail())) {
-            return new ResponseEntity(new ApiResponse(false, "Email Address already in use!", null),
+            return new ResponseEntity<>(new ApiResponse(false, "Email Address already in use!", null),
                     HttpStatus.BAD_REQUEST);
         }
         // Creating user's account
@@ -102,17 +101,26 @@ public class UsersController {
      * @return Fail - 404 Not Found
      */
     @DeleteMapping("/{id}")
-    //  TODO- investigate why is showing the password
     @JsonView(Account.WithoutPasswordView.class)
     public ResponseEntity deleteUserById(@Valid @PathVariable Long id) {
         Account account = accountService.deleteById(id);
         if (account == null) {
-            return new ResponseEntity(new ApiResponse(false, HttpStatus.BAD_REQUEST.getReasonPhrase(), null), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiResponse(false, HttpStatus.BAD_REQUEST.getReasonPhrase(), null), HttpStatus.BAD_REQUEST);
         } else {
             return ResponseEntity
                     .ok(account);
 
         }
+    }
+
+    /** Method that will get all Accounts from DB
+     *
+     * @return A List with the Accounts
+     */
+    @GetMapping()
+    @JsonView(Account.WithoutPasswordView.class)
+    public ResponseEntity getUsers(){
+        return ResponseEntity.ok(accountService.findAll());
     }
 
     /**
