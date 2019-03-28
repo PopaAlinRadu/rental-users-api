@@ -16,6 +16,7 @@ import ro.nila.ra.exceptions.AppException;
 import ro.nila.ra.model.Account;
 import ro.nila.ra.model.Role;
 import ro.nila.ra.model.enums.RoleName;
+import ro.nila.ra.model.view.Views;
 import ro.nila.ra.payload.ApiResponse;
 import ro.nila.ra.payload.JwtAuthenticationResponse;
 import ro.nila.ra.payload.SignInRequest;
@@ -116,14 +117,16 @@ public class UsersController {
      *
      * @param id identifier of the Account
      * @return Success - 200 Ok and Deleted Account
-     * Fail - 404 Not Found
+     *         Fail - 404 Not Found
      */
     @DeleteMapping("/{id}")
-    @JsonView(Account.WithoutPasswordView.class)
+    @JsonView(Views.WithRole.class)
     public ResponseEntity deleteUserById(@Valid @PathVariable Long id) {
         Account account = accountService.deleteById(id);
         if (account == null) {
-            return new ResponseEntity<>(new ApiResponse(false, HttpStatus.BAD_REQUEST.getReasonPhrase(), null), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(
+                    new ApiResponse(false, HttpStatus.BAD_REQUEST.getReasonPhrase(), null),
+                    HttpStatus.BAD_REQUEST);
         } else {
             return ResponseEntity
                     .ok(account);
@@ -132,12 +135,31 @@ public class UsersController {
     }
 
     /**
+     * Method that will get a Account based on its id
+     *
+     * @param id identifier of the Account
+     * @return Success - 200 Ok and the Account
+     *         Fail - 404 Not Found
+     */
+    @GetMapping("/{id}")
+    @JsonView(Views.WithRole.class)
+    public ResponseEntity getAccount(@Valid @PathVariable Long id){
+        if (!accountService.findById(id).isPresent()){
+            return new ResponseEntity<>(
+                    new ApiResponse(false, HttpStatus.NOT_FOUND.getReasonPhrase(), null),
+                    HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity
+                .ok(accountService.findById(id));
+    }
+
+    /**
      * Method that will get all Accounts from DB
      *
      * @return A List with the Accounts
      */
     @GetMapping()
-    @JsonView(Account.WithoutPasswordView.class)
+    @JsonView(Views.WithRole.class)
     public ResponseEntity getUsers() {
         return ResponseEntity.ok(accountService.findAll());
     }
