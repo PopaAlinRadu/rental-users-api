@@ -17,23 +17,18 @@ public class AccountServiceTest {
     private AccountService accountService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ArticleService articleService;
 
     private Account account;
 
     @Before
-    public void init(){
-        account = new Account();
-        account.setUsername("test_account");
-        account.setEmail("test_account@test.com");
-        account.setPassword(passwordEncoder.encode("test_account"));
+    public void init() {
 
-        accountService.save(account);
     }
 
     @Test
-    public void test_delete_account(){
-
-        accountService.deleteById(account.getId());
+    public void test_delete_account() {
 
     }
 }

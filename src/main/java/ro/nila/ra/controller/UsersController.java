@@ -12,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import ro.nila.ra.exceptions.AppException;
 import ro.nila.ra.model.Account;
 import ro.nila.ra.model.Role;
 import ro.nila.ra.model.enums.RoleName;
@@ -79,30 +78,28 @@ public class UsersController {
     public ResponseEntity signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
         String username = signUpRequest.getUsername();
         if (accountService.existsByUsername(username)) {
-            return new ResponseEntity<>(new ApiResponse(false, "Username is already taken!", null),
+            return new ResponseEntity<>(new ApiResponse(false, "Username is already taken!", HttpStatus.BAD_REQUEST.getReasonPhrase()),
                     HttpStatus.BAD_REQUEST);
         }
         String email = signUpRequest.getEmail();
         if (accountService.existsByEmail(email)) {
-            return new ResponseEntity<>(new ApiResponse(false, "Email Address already in use!", null),
+            return new ResponseEntity<>(new ApiResponse(false, "Email Address already in use!", HttpStatus.BAD_REQUEST.getReasonPhrase()),
                     HttpStatus.BAD_REQUEST);
         }
-        // Creating user's account
+        //  Creating user's account
         Account account = new Account(signUpRequest.getUsername(),
                 signUpRequest.getEmail(), signUpRequest.getPassword());
         account.setPassword(passwordEncoder.encode(account.getPassword()));
-
+        //  Setting role for account
         Role accountRole;
         if (signUpRequest.getRoles() == null || signUpRequest.getRoles().iterator().next().getRoleName().equals(RoleName.ROLE_USER)) {
-            accountRole = roleService.findByRoleName(RoleName.ROLE_USER).get();
+            accountRole = roleService.findByRoleName(RoleName.ROLE_USER);
         } else {
-            accountRole = roleService.findByRoleName(RoleName.ROLE_ADMIN)
-                    .orElseThrow(() -> new AppException("User Role not set."));
+            accountRole = roleService.findByRoleName(RoleName.ROLE_ADMIN);
         }
-
         account.setRoles(Collections.singleton(accountRole));
         Account result = accountService.save(account);
-
+        //  Create Location
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/users/{id}")
                 .buildAndExpand(result.getId()).toUri();
@@ -146,7 +143,7 @@ public class UsersController {
     public ResponseEntity getAccount(@Valid @PathVariable Long id){
         if (!accountService.findById(id).isPresent()){
             return new ResponseEntity<>(
-                    new ApiResponse(false, HttpStatus.NOT_FOUND.getReasonPhrase(), null),
+                    new ApiResponse(false, HttpStatus.NOT_FOUND.getReasonPhrase(), HttpStatus.NOT_FOUND.getReasonPhrase()),
                     HttpStatus.NOT_FOUND);
         }
         return ResponseEntity
