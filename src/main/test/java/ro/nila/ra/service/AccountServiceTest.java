@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import ro.nila.ra.model.Account;
+import ro.nila.ra.service.account.AccountService;
+import ro.nila.ra.service.article.ArticleService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

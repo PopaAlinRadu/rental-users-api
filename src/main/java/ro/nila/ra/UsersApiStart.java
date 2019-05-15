@@ -11,7 +11,7 @@ import java.util.TimeZone;
 @SpringBootApplication
 @EntityScan(basePackageClasses = {Jsr310JpaConverters.class},
             basePackages = {"ro.nila.ra"})
-public class RentalApplication {
+public class UsersApiStart {
 
     @PostConstruct
     void init() {
@@ -19,7 +19,7 @@ public class RentalApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(RentalApplication.class, args);
+        SpringApplication.run(UsersApiStart.class, args);
     }
 
 }

@@ -23,11 +23,28 @@
 
     <dependencies>
 
-        <!--Security Jar will have Model Jar and Repository Jar-->
         <dependency>
             <groupId>ro.nila.ra</groupId>
             <artifactId>ra-security-jar</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ro.nila.ra</groupId>
+            <artifactId>ra-model-jar</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ro.nila.ra</groupId>
+            <artifactId>ra-repository-jar</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <dependency>

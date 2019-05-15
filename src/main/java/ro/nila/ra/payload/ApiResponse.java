@@ -1,45 +1,17 @@
 package ro.nila.ra.payload;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import ro.nila.ra.model.Account;
-import ro.nila.ra.model.view.Views;
+import lombok.Getter;
+import lombok.Setter;
 
-public class ApiResponse {
+@Getter
+@Setter
+public class ApiResponse<T> {
 
-    private Boolean success;
-    private String message;
-    private String resourceLocation;
+    private Boolean status;
+    private T data;
 
-    public ApiResponse(Boolean success, String message, String resourceLocation) {
-        this.success = success;
-        this.message = message;
-        this.resourceLocation = resourceLocation;
-    }
-
-    @JsonView(Views.WithRole.class)
-    public Boolean getSuccess() {
-        return success;
-    }
-
-    public void setSuccess(Boolean success) {
-        this.success = success;
-    }
-
-    @JsonView(Views.WithRole.class)
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    @JsonView(Views.WithRole.class)
-    public String getResourceLocation() {
-        return resourceLocation;
-    }
-
-    public void setResourceLocation(String resourceLocation) {
-        this.resourceLocation = resourceLocation;
+    public ApiResponse(Boolean status, T data) {
+        this.status = status;
+        this.data = data;
     }
 }
